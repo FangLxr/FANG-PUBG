@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JQK IOS - HACK GAME IOS</title>
+    <style>
+        :root {
+            --bg-color: #0b0c10; /* Giữ nền website màu đen tối như cũ */
+            --card-bg: rgba(255, 255, 255, 0.06);  /* ĐỔI THÀNH TRONG SUỐT dạng kính */
+            --text-color: #c5a059; /* Màu vàng Gold sang trọng cho tiêu đề */
+            --text-light: #ffffff; /* Màu chữ ngoài nền tối */
+            --accent-green: #00ff9d; /* Đổi sang màu xanh sáng để nổi bật trên nền tối */
+            --btn-download: linear-gradient(135deg, #007bff, #00d2ff);
+            --btn-key: linear-gradient(135deg, #ff007f, #ff7b00);
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Nền tuyết rơi nhẹ nhàng phía sau */
+        #snow-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* Tiêu đề chính dạng Shop */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.8em;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin: 0;
+            background: linear-gradient(to right, #fff, var(--text-color), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(197, 160, 89, 0.2);
+        }
+
+        header p {
+            color: #888;
+            margin-top: 5px;
+            font-size: 0.95em;
+        }
+
+        /* Khu vực danh mục */
+        .category-section {
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 40px;
+        }
+
+        .category-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: var(--text-color);
+            border-left: 4px solid var(--text-color);
+            padding-left: 10px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Bố cục lưới chứa các thẻ sản phẩm giống Shop */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* Thẻ sản phẩm (Card Shop TRONG SUỐT) */
+        .product-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px); /* Hiệu ứng mờ kính phía sau */
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(197, 160, 89, 0.6);
+            box-shadow: 0 15px 30px rgba(197, 160, 89, 0.25);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Tên sản phẩm đổi sang màu trắng để nổi bật trên khung trong suốt */
+        .product-name {
+            font-size: 1.25em;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Nhãn trạng thái (Status tag) */
+        .product-status {
+            display: inline-block;
+            font-size: 0.75em;
+            padding: 4px 8px;
+            border-radius: 5px;
+            background: rgba(0, 255, 157, 0.15);
+            color: var(--accent-green);
+            font-weight: bold;
+            margin-bottom: 15px;
+            align-self: flex-start;
+        }
+
+        /* CSS cho Banner hình ảnh bên trong card */
+        .banner img {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto 15px auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+        }
+
+        /* Khu vực nút bấm trong thẻ */
+        .card-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: auto; /* Đẩy cụm nút xuống dưới cùng card */
+        }
+
+        .btn {
+            display: block;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9em;
+            color: #fff;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            filter: brightness(1.15);
+            transform: scale(1.01);
+        }
+
+        .btn-download {
+            background: var(--btn-download);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        }
+
+        .btn-key {
+            background: var(--btn-key);
+            box-shadow: 0 4px 12px rgba(255, 0, 127, 0.3);
+        }
+
+        /* Thông tin liên hệ phía dưới */
+        .footer-info {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            width: 100%;
+            max-width: 600px;
+            color: var(--text-light);
+        }
+
+        .footer-info p {
+            margin: 10px 0;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        .tele-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .bank-info {
+            color: var(--text-color);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="snow-canvas"></canvas>
+
+    <header>
+        <h1>𝑱𝑸𝑲 𝑰𝑶𝑺 </h1>
+        <p>Web Cung Cấp HACK GAME Miễn Phí</p>
+    </header>
+
+    <div class="category-section">
+        <div class="category-title">📂 HACK PUBG IOS </div>
+        <div class="products-grid">
+            
+            <div class="product-card">
+                <div>
+                    <div class="product-name">DRACULA PRO</div>
+                    <div class="product-status">● Đang Hoạt Động </div>
+                </div>
+                <div class="banner">
+                    <img src="https://i.postimg.cc/sxfyf63Q/IMG-0839.jpg" alt="Banner">
+                </div>
+                <div class="card-actions">
+                    <a href="https://ipas.cc/95mnuq" class="btn btn-download">TẢI HACK</a>
+                    <a href="https://link4m.org/GSo0CC" class="btn btn-key">LẤY KEY</a>
+                </div>
+            </div>
+            
+                        <div class="product-card">
+                <div>
+                    <div class="product-name">BIGCHANG</div>
+                    <div class="product-status">● Đang Hoạt Động </div>
+                </div>
+                <div class="banner">
+                    <img src="https://i.postimg.cc/gj7Qf20w/01779b60-6f3f-46d6-8293-24816143f8e5.png" alt="Banner">
+                </div>
+                <div class="card-actions">
+                    <a href="https://bbmkts.com/ipa/download/pubg" class="btn btn-download">TẢI HACK</a>
+                    <a href="https://link4m.net/1nbmlhHv" class="btn btn-key">LẤY KEY</a>
+                </div>
+            </div>
+            
+
+            <div class="product-card">
+                <div>
+                    <div class="product-name">LUXURY</div>
+                    <div class="product-status">● Đang Hoạt Động </div>
+                </div>
+                <div class="banner">
+                    <img src="https://i.postimg.cc/90LJtVkn/IMG-0444.jpg" alt="Banner">
+                </div>
+                <div class="card-actions">
+                    <a href="https://appinstall.cloud/install/hecoiwc02222" class="btn btn-download">TẢI HACK</a>
+                    <a href="https://link4m.org/PSho70" class="btn btn-key">LẤY KEY</a>
+                </div>
+            </div>
+            
+
+            <div class="product-card">
+                <div>
+                    <div class="product-name">TIMO</div>
+                    <div class="product-status">● Đang Hoạt Động </div>
+                </div>
+                <div class="banner">
+                    <img src="https://i.postimg.cc/YS7Y9Znz/IMG-0445.jpg" alt="Banner">
+                </div>
+                <div class="card-actions">
+                    <a href="https://ipas.cc/d6xbju" class="btn btn-download">TẢI HACK</a>
+                    <a href="https://link4m.org/fQSwXb" class="btn btn-key">LẤY KEY</a>
+                </div>
+            </div>
+            
+            
+            <div class="product-card">
+                <div>
+                    <div class="product-name">RAVEN</div>
+                    <div class="product-status">● Đang Hoạt Động </div>
+                </div>
+                <div class="banner">
+                    <img src="https://i.postimg.cc/9XB78LQS/IMG-0447.png" alt="Banner">
+                </div>
+                <div class="card-actions">
+                    <a href="https://transfer.it/t/m1CrFm0xHZAJ" class="btn btn-download">TẢI HACK</a>
+                    <a href="https://link4m.org/mc9mlAF" class="btn btn-key">LẤY KEY</a>
+                </div>
+            </div>
+            
+            <div class="product-card">
+                <div>
+                    <div class="product-name">ZORO</div>
+                    <div class="product-status">● Đang Hoạt Động </div>
+                </div>
+                <div class="banner">
+                    <img src="https://ipa.xumod.vn/uploads/images/9B247E1E-DEAF-4DD6-8677-148334522007_20260517_120823_7e9d08.png" alt="Banner">
+                </div>
+                <div class="card-actions">
+                    <a href="https://ipas.cc/662kxr" class="btn btn-download">TẢI HACK</a>
+                    <a href="https://link4m.net/KwhxXq" class="btn btn-key">LẤY KEY</a>
+                </div>
+            </div>
+            
+            <div class="product-card">
+                <div>
+                    <div class="product-name">KONG</div>
+                    <div class="product-status">● Đang Hoạt Động </div>
+                </div>
+                <div class="banner">
+                    <img src="https://ipa.xumod.vn/uploads/images/7DABF052-F0C9-441A-A699-365B735B3B2C_20260523_102337_f50699.png" alt="Banner">
+                </div>
+                <div class="card-actions">
+                    <a href="https://transfer.it/t/AQDHL9wHUBAR" class="btn btn-download">TẢI HACK</a>
+                    <a href="https://link4m.org/X4ukl2X" class="btn btn-key">LẤY KEY</a>
+                </div>
+            </div>
+            
+            <div class="product-card">
+                <div>
+                    <div class="product-name">DOLPHIN</div>
+                    <div class="product-status">● Đang Hoạt Động </div>
+                </div>
+                <div class="banner">
+                    <img src="https://ipa.xumod.vn/uploads/images/42632131-E5E8-44AB-BBB0-72966C4390DC_20260524_114622_f6cd6f.png" alt="Banner">
+                </div>
+                <div class="card-actions">
+                    <a href="https://ipas.cc/fu7dic" class="btn btn-download">TẢI HACK</a>
+                    <a href="https://link4m.net/mc9mlAF" class="btn btn-key">LẤY KEY</a>
+                </div>
+            </div>
+            
+             <div class="product-card">
+                <div>
+                    <div class="product-name">ZERO</div>
+                    <div class="product-status">● Đang Hoạt Động </div>
+                </div>
+                <div class="banner">
+                    <img src="https://ipa.xumod.vn/uploads/images/1I7FRNQJ7_318U6A_20260323_054019_698bb9.jpeg" alt="Banner">
+                </div>
+                <div class="card-actions">
+                    <a href="https://chaptodocquyen.appinstall.cloud/VN.ipa" class="btn btn-download">TẢI HACK</a>
+                    <a href="https://link4m.net/X4ukl2X" class="btn btn-key">LẤY KEY</a>
+                </div>
+            </div>
+            
+            <div class="product-card">
+                <div>
+                    <div class="product-name">SHARK</div>
+                    <div class="product-status">● Đang Hoạt Động </div>
+                </div>
+                <div class="banner">
+                    <img src="https://i.postimg.cc/2SBQqcc0/IMG-0667.jpg" alt="Banner">
+                </div>
+                <div class="card-actions">
+                    <a href="https://ipas.cc/pk2ch0" class="btn btn-download">TẢI HACK</a>
+                    <a href="https://link4m.net/X4ukl2X" class="btn btn-key">LẤY KEY</a>
+                </div>
+            </div>
+            
+             <div class="category-section">
+        <div class="category-title">📂 HACK PUBG MOBILE ADR</div>
+        <div class="products-grid">
+
+            
+            <div class="product-card">
+                <div>
+                    <div class="product-name">RED</div>
+                    <div class="product-status">● Đang Hoạt Động </div>
+                </div>
+                <div class="banner">
+                    <img src="https://i.postimg.cc/wTTW4wCy/IMG-0647.jpg148334522007_20260517_120823_7e9d08.png" alt="Banner">
+                </div>
+                <div class="card-actions">
+                    <a href="https://t.me/JQKADRCHEAT/5" class="btn btn-download">TẢI HACK</a>
+                    <a href="https://link4m.net/9PChY" class="btn btn-key">LẤY KEY</a>
+                </div>
+            </div>
+            
+            <div class="product-card">
+                <div>
+                    <div class="product-name">JAVA</div>
+                    <div class="product-status">● Đang Hoạt Động </div>
+                </div>
+                <div class="banner">
+                    <img src="https://i.postimg.cc/529M353n/IMG-0648.jpg" alt="Banner">
+                </div>
+                <div class="card-actions">
+                    <a href="https://t.me/JQKADRCHEAT/3" class="btn btn-download">TẢI HACK [64BIT]</a>
+                    <a href="https://t.me/JQKADRCHEAT/4" class="btn btn-download">TẢI HACK [32BIT]</a>
+                    <a href="https://link4m.org/MemgFGq8" class="btn btn-key">LẤY KEY</a>
+                </div>
+            </div>
+            
+            <div class="category-section">
+        <div class="category-title">📂 HACK LIÊN QUÂN IOS </div>
+        <div class="products-grid">
+            
+            <div class="product-card">
+                <div>
+                    <div class="product-name"> MENU CHẤP TỐ </div>
+                    <div class="product-status">● Đang Hoạt Động </div>
+                </div>
+                <div class="banner">
+                    <img src="https://ipa.xumod.vn/uploads/images/lqchap_20260525_031800_f7a249.jpg" alt="Banner">
+                </div>
+                <div class="card-actions">
+                    <a href="https://ipas.cc/wfv4bi" class="btn btn-download">TẢI HACK</a>
+                    <a href="https://link4m.net/2NG5PEcl" class="btn btn-key">LẤY KEY</a>
+                </div>
+            </div>
+            
+              <div class="category-section">
+        <div class="category-title">📂 HACK TỐC CHIẾN IOS </div>
+        <div class="products-grid">
+            
+            <div class="product-card">
+                <div>
+                    <div class="product-name"> MENU IOS </div>
+                    <div class="product-status">● Đang Hoạt Động </div>
+                </div>
+                <div class="banner">
+                    <img src="https://ipa.xumod.vn/uploads/images/IMG_6056_20260509_071554_5d0339.png" alt="Banner">
+                </div>
+                <div class="card-actions">
+                    <a href="https://ipas.cc/rwkbbi" class="btn btn-download">TẢI HACK</a>
+                    <a href="https://link4m.org/Yqml9Hls" class="btn btn-key">LẤY KEY</a>
+                </div>
+            </div>
+           
+               <div class="category-section">
+        <div class="category-title">📂 HACK PLAYTOGETHER IOS </div>
+        <div class="products-grid">
+            
+            <div class="product-card">
+                <div>
+                    <div class="product-name"> MENU ZORO </div>
+                    <div class="product-status">● Đang Hoạt Động </div>
+                </div>
+                <div class="banner">
+                    <img src="https://ipa.xumod.vn/uploads/images/0E9C256E-5004-47B4-B1E2-3BEDBFB4C223_20260514_165258_9eb3af.png" alt="Banner">
+                </div>
+                <div class="card-actions">
+                    <a href="https://ipas.cc/am4e1j" class="btn btn-download">TẢI HACK</a>
+                    <a href="https://link4m.org/FklqI" class="btn btn-key">LẤY KEY</a>
+                </div>
+            </div>
+          
+               <div class="category-section">
+        <div class="category-title">📂 HACK ZING SPEED IOS </div>
+        <div class="products-grid">
+            
+            <div class="product-card">
+                <div>
+                    <div class="product-name"> MENU IOS </div>
+                    <div class="product-status">● Đang Hoạt Động </div>
+                </div>
+                <div class="banner">
+                    <img src="https://ipa.xumod.vn/uploads/images/12312_20260206_164312_897b59.jpg" alt="Banner">
+                </div>
+                <div class="card-actions">
+                    <a href="https://transfer.it/t/RqhnJqkhgRjL" class="btn btn-download">TẢI HACK</a>
+                    <a href="https://link4m.net/DIA2ABE" class="btn btn-key">LẤY KEY</a>
+                </div>
+            </div>
+            
+              <div class="category-section">
+        <div class="category-title">📂 HACK MOBILE LEGENDS IOS </div>
+        <div class="products-grid">
+            
+            <div class="product-card">
+                <div>
+                    <div class="product-name"> MENU IOS </div>
+                    <div class="product-status">● Đang Hoạt Động </div>
+                </div>
+                <div class="banner">
+                    <img src="https://ipa.xumod.vn/uploads/images/IMG_3918_20260222_052125_f9f643.png" alt="Banner">
+                </div>
+                <div class="card-actions">
+                    <a href="https://ipa.xumod.vn/uploads/Mobile_Legends_Bang_Bang_2.1.47_1771736733_20260222_052052_a65b42.ipa" class="btn btn-download">TẢI HACK</a>
+                    <a href="https://link4m.org/X4ukl2X" class="btn btn-key">LẤY KEY</a>
+                </div>
+            </div>
+            
+             <div class="category-section">
+        <div class="category-title">📂 HACK 8 BALL POLL IOS </div>
+        <div class="products-grid">
+            
+            <div class="product-card">
+                <div>
+                    <div class="product-name"> MENU VIP IOS </div>
+                    <div class="product-status">● Đang Hoạt Động </div>
+                </div>
+                <div class="banner">
+                    <img src="https://ipa.xumod.vn/uploads/images/74DFCEB9-7A31-48FC-B20B-B17A7707E73E_20260530_041444_ef65cc.png" alt="Banner">
+                </div>
+                <div class="card-actions">
+                    <a href="https://appinstall.cloud/install/zrbx8ryj5555?v=1782185086" class="btn btn-download">TẢI HACK</a>
+                    <a href="https://link4m.org/X4ukl2X" class="btn btn-key">LẤY KEY</a>
+                </div>
+            </div>
+            
+    <div class="footer-info">
+        <p> Telegram Admin : <a href="https://t.me/JQK_07" class="tele-link" target="_blank">@JQK_07</a></p>
+        <p> Kênh Thông Báo : <a href="https://t.me/JQKIOSCHEAT" class="tele-link" target="_blank">@JQKIOSCHEAT</a></p>
+        <p> Kênh Chat : <a href="https://t.me/JQKChat" class="tele-link" target="_blank">@JQKChat</a></p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const numFlakes = 60; 
+        const flakes = [];
+
+        for (let i = 0; i < numFlakes; i++) {
+            flakes.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 2 + 1,
+                speed: Math.random() * 0.5 + 0.3,
+                opacity: Math.random() * 0.5 + 0.2
+            });
+        }
+
+        function drawSnow() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < numFlakes; i++) {
+                const f = flakes[i];
+                ctx.beginPath();
+                ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
+                ctx.fillStyle = `rgba(255, 255, 255, ${f.opacity})`;
+                ctx.fill();
+            }
+            moveSnow();
+        }
+
+        function moveSnow() {
+            for (let i = 0; i < numFlakes; i++) {
+                const f = flakes[i];
+                f.y += f.speed; 
+                f.x += Math.sin(f.y / 30) * 0.3; 
+
+                if (f.y > canvas.height) {
+                    flakes[i].y = 0;
+                    flakes[i].x = Math.random() * canvas.width;
+                }
+            }
+        }
+
+        function update() {
+            drawSnow();
+            requestAnimationFrame(update);
+        }
+        update();
+    </script>
+
+</body>
+</html>
